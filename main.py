@@ -1,13 +1,11 @@
-from src.utils import get_data, filter_data, sort_operations, format_date, format_transaction, print_transactions
+from src.utils import get_data, filter_data, sort_operations, format_date, mask_transactions, format_transaction
 
 load_data = get_data()
-filter_ = filter_data(load_data)
-sort_ = sort_operations(filter_)
-format_ = format_date(sort_)
-format_tr = format_transaction(load_data)
+filtered_data = filter_data(load_data)
+sorted_operations = sort_operations(filtered_data)
+formatted_data = format_date(sorted_operations)
+masked_tr = mask_transactions(formatted_data)
+result_transaction = format_transaction(masked_tr)
 
 
-#print_transactions(sort_)
-
-#program = print_transactions(load_data)
-print(format_)
+print(result_transaction)

@@ -20,29 +20,40 @@ def sort_operations(data):
     return sorted_operation[:5]
 
 
-def format_date(date: str):
-    """Возваращет дату в виде ДД.ММ.ГГГГ"""
-    date_format = datetime.strptime(date, "%Y-%m-%dT%H:%M:%S.%f")
-    return date_format.strftime("%d.%m.%Y")
+def format_date(data):
+    '''форматирует дату'''
+    for el in data:
+        date_str = el["date"].split('T')
+        numbers = date_str[0].split('-')
+        y_, m_, d_ = numbers
+        el["date"] = '.'.join([d_, m_, y_])
+
+    return data
 
 
-def mask_account(account: str):
-    """защифровка счета"""
-    masked_account = "**" + account[-4:]
-    return f"Счет {masked_account}"
+def mask_transactions(data):
+    '''маскриует счет и карту'''
+    for transaction in data:
+        if 'from' in transaction:
+            from_parts = transaction['from'].split()
+            if from_parts[0] == 'Счет':
+                transaction['from'] = 'Счет **' + from_parts[-1][-4:]
+            else:
+                card_number = from_parts[-1]
+                transaction['from'] = ' '.join(from_parts[:-1]) + ' ' + card_number[:4] + ' ' + card_number[4][:6] + '** ****' + ' ' + card_number[-4:]
+
+        if transaction['to'].startswith('Счет'):
+            transaction['to'] = 'Счет **' + transaction['to'].split()[-1][-4:]
+        else:
+            to_parts = transaction['to'].split()
+            card_number = to_parts[-1]
+            transaction['to'] = ' '.join(to_parts[:-1]) + ' ' + card_number[:4] + ' ' + card_number[4][:6] + '** ****' + ' ' + card_number[-4:]
+    return data
 
 
-def mask_card(card: str):
-    """Зашифровка карты"""
-    card = card.split()
-    card_number = card.pop()
-    card_name = " ".join(card)
-    secret_number = f"{card_number[:4]} {card_number[4:6]}** **** {card_number[-4:]}"
-    return f"{card_name} {secret_number}"
 
-
-def format_amount(amount):
-    return amount['amount']
+#def format_amount(amount):
+    #return amount['amount']
 
 
 def format_transaction(data):
@@ -54,17 +65,24 @@ def format_transaction(data):
     #14.10.2018 Перевод организации
 # Visa Platinum 7000 79** **** 6361 -> Счет **9638
     # 82771.72 руб.
-    date = format_date(data['date'])
-    payment_from = mask_card(data.get('from', ''))
-    payment_to = mask_account(data.get('to', ''))
-    amount = format_amount(data['operationAmount']['currency']['name'])
-    return f'{date} {data['description']}\n{payment_from} -> {payment_to}\n{amount}'
-
-
-def print_transactions(data):
     for transaction in data:
-        print(format_transaction(transaction))
+        amount = transaction['operationAmount']['amount']
+        currency = transaction['operationAmount']['currency']['name']
+        if 'from' in transaction:
+            print(f''''
+            {transaction['date']} {transaction['description']}
+            {transaction['from']} -> {transaction['to']}
+              {amount} {currency}''')
+        else:
+            print(f''''
+            {transaction['date']} {transaction['description']}
+            {transaction['to']}
+             {amount} {currency}''')
 
+
+#def print_transactions(data):
+    #for transaction in data:
+        #print(format_transaction(transaction))
 
 
 
