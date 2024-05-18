@@ -40,14 +40,14 @@ def mask_transactions(data):
                 transaction['from'] = 'Счет **' + from_parts[-1][-4:]
             else:
                 card_number = from_parts[-1]
-                transaction['from'] = ' '.join(from_parts[:-1]) + ' ' + card_number[:4] + ' ' + card_number[4][:6] + '** ****' + ' ' + card_number[-4:]
+                transaction['from'] = ' '.join(from_parts[:-1]) + ' ' + card_number[:4] + ' ' + card_number[4:6] + '** ****' + ' ' + card_number[-4:]
 
         if transaction['to'].startswith('Счет'):
             transaction['to'] = 'Счет **' + transaction['to'].split()[-1][-4:]
         else:
             to_parts = transaction['to'].split()
             card_number = to_parts[-1]
-            transaction['to'] = ' '.join(to_parts[:-1]) + ' ' + card_number[:4] + ' ' + card_number[4][:6] + '** ****' + ' ' + card_number[-4:]
+            transaction['to'] = ' '.join(to_parts[:-1]) + ' ' + card_number[:4] + ' ' + card_number[4:6] + '** ****' + ' ' + card_number[-4:]
     return data
 
 
