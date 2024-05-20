@@ -1,4 +1,4 @@
-from src.utils import format_date, mask_transactions
+from src.utils import format_date, mask_transactions, filter_data, sort_operations
 
 
 def test_format_date():
@@ -17,6 +17,46 @@ def test_mask_transactions():
     masked_transaction = mask_transactions(test_transactions)
     assert masked_transaction[0]["from"] == "Visa Gold 5999 41** **** 6353"
     assert masked_transaction[0]["to"] == "Счет **4472"
+
+
+def test_filter_data():
+    test_data = [
+        {
+            "id": 147815167,
+            "state": "EXECUTED"
+        },
+
+        {
+            "id": 476991061,
+            "state": "CANCELED"
+        }
+    ]
+    filtered_data = filter_data(test_data)
+    expected_result = [{
+            "id": 147815167,
+            "state": "EXECUTED"
+        }]
+    assert filtered_data == expected_result
+
+
+def test_sort_operations():
+    test_operations = [
+        {"date": "2023-01-05", "state": "EXECUTED"},
+        {"date": "2023-01-01", "state": "EXECUTED"},
+        {"date": "2023-01-03", "state": "EXECUTED"},
+        {"date": "2023-01-04", "state": "EXECUTED"},
+        {"date": "2023-01-02", "state": "EXECUTED"},
+        {"date": "2023-01-06", "state": "EXECUTED"}
+    ]
+    expected_result = [
+        {"date": "2023-01-06", "state": "EXECUTED"},
+        {"date": "2023-01-05", "state": "EXECUTED"},
+        {"date": "2023-01-04", "state": "EXECUTED"},
+        {"date": "2023-01-03", "state": "EXECUTED"},
+        {"date": "2023-01-02", "state": "EXECUTED"}
+    ]
+    assert sort_operations(test_operations) == expected_result
+
 
 
 
